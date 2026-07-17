@@ -1,7 +1,7 @@
 ![Coords & Days logo](https://cdn.modrinth.com/data/cached_images/959ef1967460b70d0f74d01fed4e916e677fb15e.png)
 ---
 A Minecraft datapack and resourcepack that displays your current coordinates and day count on the left-top corner.
-
+**WARNING! Resourcepack is required for correct datapack working!**
 ## Features
 * Shows synced player position coordinates.
 * Shows actual world day count.
