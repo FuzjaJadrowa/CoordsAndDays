@@ -8,4 +8,3 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 execute as @a run function cc:player_tick
-
