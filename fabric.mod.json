@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "coordsanddays",
+  "version": "1.0.1+26.3",
+  "name": "Coords & Days",
+  "description": "Displays coordinates and days in Minecraft.",
+  "authors": [
+    "FuzjaJadrowa"
+  ],
+  "contact": {},
+  "license": "ARR",
+  "icon": "pack.png",
+  "environment": "*",
+  "entrypoints": {},
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": ">=26.3-alpha.5",
+    "fabric-api": ">=0.155.3+26.3"
+  }
+}
