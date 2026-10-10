@@ -1,17 +1,23 @@
 # Config
+$ErrorActionPreference = "Stop"
 $version = "1.0.1+26.3"
-$datapackDir = "datapack"
-$resourcepackDir = "resourcepack"
+$packDir = "pack"
 $buildDir = "build"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 if ($scriptDir) { Set-Location $scriptDir }
 
-$datapackZip = "$buildDir\CoordsAndDays-datapack-$version.zip"
-$resourcepackZip = "$buildDir\CoordsAndDays-resourcepack-$version.zip"
+$fileVersion = $version.Replace('+', '-')
+$packZip = "$buildDir\CoordsAndDays-pack-$fileVersion.zip"
 $modJar = "$buildDir\CoordsAndDays-fabric-$version.jar"
 
 Write-Host "Building Coords & Days packages (Version: $version)..." -ForegroundColor Cyan
+
+foreach ($requiredPath in @("$packDir\pack.mcmeta", "$packDir\assets", "$packDir\data")) {
+    if (-not (Test-Path -LiteralPath $requiredPath)) {
+        throw "Required pack content not found at $requiredPath"
+    }
+}
 
 if (-not (Test-Path $buildDir)) {
     Write-Host "Creating build directory..." -ForegroundColor Gray
@@ -52,8 +58,7 @@ function Zip-FolderContents {
 
 function Zip-FabricMod {
     param (
-        [string]$datapackDir,
-        [string]$resourcepackDir,
+        [string]$packDir,
         [string]$destJar
     )
     if (Test-Path $destJar) {
@@ -80,29 +85,18 @@ function Zip-FabricMod {
             Remove-Item $tempFile -Force
         }
         
-        if (Test-Path "$resourcepackDir\pack.png") {
-            $iconPath = (Resolve-Path "$resourcepackDir\pack.png").Path
+        if (Test-Path "$packDir\pack.png") {
+            $iconPath = (Resolve-Path "$packDir\pack.png").Path
             [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $iconPath, "pack.png") | Out-Null
         }
         
-        if (Test-Path "$datapackDir\data") {
-            $srcPath = (Resolve-Path "$datapackDir\data").Path
+        foreach ($folder in @("data", "assets")) {
+            $srcPath = (Resolve-Path "$packDir\$folder").Path
             $files = Get-ChildItem -Path $srcPath -Recurse -File
             foreach ($file in $files) {
                 $srcPathNormalized = $srcPath.TrimEnd('\') + '\'
                 $relative = $file.FullName.Substring($srcPathNormalized.Length)
-                $entryName = "data/" + $relative.Replace('\', '/')
-                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $file.FullName, $entryName) | Out-Null
-            }
-        }
-        
-        if (Test-Path "$resourcepackDir\assets") {
-            $srcPath = (Resolve-Path "$resourcepackDir\assets").Path
-            $files = Get-ChildItem -Path $srcPath -Recurse -File
-            foreach ($file in $files) {
-                $srcPathNormalized = $srcPath.TrimEnd('\') + '\'
-                $relative = $file.FullName.Substring($srcPathNormalized.Length)
-                $entryName = "assets/" + $relative.Replace('\', '/')
+                $entryName = "$folder/" + $relative.Replace('\', '/')
                 [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $file.FullName, $entryName) | Out-Null
             }
         }
@@ -111,22 +105,7 @@ function Zip-FabricMod {
     }
 }
 
-if (Test-Path $datapackDir) {
-    Zip-FolderContents -srcDir $datapackDir -destZip $datapackZip
-} else {
-    Write-Warning "Datapack directory not found at $datapackDir"
-}
-
-if (Test-Path $resourcepackDir) {
-    Zip-FolderContents -srcDir $resourcepackDir -destZip $resourcepackZip
-} else {
-    Write-Warning "Resourcepack directory not found at $resourcepackDir"
-}
-
-if ((Test-Path $datapackDir) -and (Test-Path $resourcepackDir)) {
-    Zip-FabricMod -datapackDir $datapackDir -resourcepackDir $resourcepackDir -destJar $modJar
-} else {
-    Write-Warning "Cannot build Fabric mod because datapack or resourcepack directory is missing."
-}
+Zip-FolderContents -srcDir $packDir -destZip $packZip
+Zip-FabricMod -packDir $packDir -destJar $modJar
 
 Write-Host "Build completed! Output folder: $buildDir" -ForegroundColor Green
