@@ -78,12 +78,3 @@ void main() {
 
     texCoord0 = UV0;
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-//
-//   This shader has been created by FuzjaJadrowa.
-//              https://fuzjajadrowa.pl
-//
-//              COPYING IS PROHIBITED!
-//
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

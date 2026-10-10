@@ -1,6 +1,6 @@
 # Config
 $ErrorActionPreference = "Stop"
-$version = "1.0.1+26.3"
+$version = "1.1.0+26.X"
 $packDir = "pack"
 $buildDir = "build"
 
@@ -16,6 +16,13 @@ Write-Host "Building Coords & Days packages (Version: $version)..." -ForegroundC
 foreach ($requiredPath in @("$packDir\pack.mcmeta", "$packDir\assets", "$packDir\data")) {
     if (-not (Test-Path -LiteralPath $requiredPath)) {
         throw "Required pack content not found at $requiredPath"
+    }
+}
+
+$packMetadata = Get-Content -LiteralPath "$packDir\pack.mcmeta" -Raw -Encoding UTF8 | ConvertFrom-Json
+foreach ($overlay in $packMetadata.overlays.entries) {
+    if (-not (Test-Path -LiteralPath "$packDir\$($overlay.directory)" -PathType Container)) {
+        throw "Overlay directory not found: $($overlay.directory)"
     }
 }
 
@@ -85,20 +92,12 @@ function Zip-FabricMod {
             Remove-Item $tempFile -Force
         }
         
-        if (Test-Path "$packDir\pack.png") {
-            $iconPath = (Resolve-Path "$packDir\pack.png").Path
-            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $iconPath, "pack.png") | Out-Null
-        }
-        
-        foreach ($folder in @("data", "assets")) {
-            $srcPath = (Resolve-Path "$packDir\$folder").Path
-            $files = Get-ChildItem -Path $srcPath -Recurse -File
-            foreach ($file in $files) {
-                $srcPathNormalized = $srcPath.TrimEnd('\') + '\'
-                $relative = $file.FullName.Substring($srcPathNormalized.Length)
-                $entryName = "$folder/" + $relative.Replace('\', '/')
-                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $file.FullName, $entryName) | Out-Null
-            }
+        $srcPath = (Resolve-Path $packDir).Path
+        $srcPathNormalized = $srcPath.TrimEnd('\') + '\'
+        foreach ($file in (Get-ChildItem -Path $srcPath -Recurse -File)) {
+            $relative = $file.FullName.Substring($srcPathNormalized.Length)
+            $entryName = $relative.Replace('\', '/')
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $file.FullName, $entryName) | Out-Null
         }
     } finally {
         $archive.Dispose()

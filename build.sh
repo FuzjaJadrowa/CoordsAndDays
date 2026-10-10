@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Config
-VERSION="1.0.1+26.3"
+VERSION="1.1.0+26.X"
 PACK_DIR="pack"
 BUILD_DIR="build"
 
@@ -62,11 +62,8 @@ zip_fabric_mod() {
         sed "s/\"version\":\s*\"[^\"]*\"/\"version\": \"${VERSION}\"/g" fabric.mod.json > "${tmp_dir}/fabric.mod.json"
     fi
     
-    if [ -f "${pack_dir}/pack.png" ]; then
-        cp "${pack_dir}/pack.png" "${tmp_dir}/pack.png"
-    fi
-    
-    cp -r "${pack_dir}/data" "${pack_dir}/assets" "$tmp_dir/"
+    # Include pack.mcmeta and overlay directories as well as assets/ and data/.
+    cp -r "${pack_dir}/." "$tmp_dir/"
     
     (cd "$tmp_dir" && zip -q -r "$abs_dest_jar" *)
     rm -rf "$tmp_dir"

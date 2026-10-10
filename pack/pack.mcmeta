@@ -5,5 +5,19 @@
         "supported_formats": {"min_inclusive": 15, "max_inclusive": 999},
 		"min_format": 15,
 		"max_format": 999
+    },
+    "overlays": {
+        "entries": [
+            {
+                "directory": "88",
+                "min_format": 88,
+                "max_format": 92
+            },
+            {
+                "directory": "93",
+                "min_format": 93,
+                "max_format": 999
+            }
+        ]
     }
 }

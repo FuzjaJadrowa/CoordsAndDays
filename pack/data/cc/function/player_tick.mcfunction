@@ -1,12 +1,3 @@
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#
-#  This function has been created by FuzjaJadrowa.
-#               https://fuzjajadrowa.pl
-#
-#               COPYING IS PROHIBITED!
-#
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
 execute store result score @s cc_x run data get entity @s Pos[0]
 execute store result score @s cc_y run data get entity @s Pos[1]
 execute store result score @s cc_z run data get entity @s Pos[2]
